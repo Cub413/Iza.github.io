@@ -129,6 +129,9 @@
             document.getElementById("mensajeFinal").style.display = "block";
             document.getElementById("btnSiguiente").style.display = "inline";
         }
+document.addEventListener('contextmenu', function(event) {
+  event.preventDefault();
+});
 
         // Función para cambiar al siguiente bloque
         function cambiarBloque() {
