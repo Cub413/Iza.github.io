@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎂 ¡Feliz Cumpleaños, Izabelly! 🎂</title>
+    <style>
+        body { 
+            text-align: center; font-family: Arial, sans-serif; 
+            background: linear-gradient(45deg, #ffccff, #ff99ff, #ff66ff); 
+            color: white; 
+            overflow: hidden;
+        }
+        .pantalla { display: none; }
+        .activa { display: block; }
+        h1 { font-size: 2.5em; text-shadow: 2px 2px 10px #ffcc00; }
+        p { font-size: 1.2em; }
+        #bloque { width: 100px; height: 100px; cursor: pointer; }
+        #barraProgreso { width: 100%; height: 20px; background: #ddd; margin-top: 10px; border-radius: 10px; }
+        #progreso { width: 0%; height: 100%; background: limegreen; border-radius: 10px; }
+        #mensajeFinal { display: none; font-size: 1.5em; background: #ff4081; padding: 10px; border-radius: 10px; margin-top: 20px; }
+        button { background: #ff4081; color: white; border: none; padding: 10px 20px; font-size: 1.2em; margin: 10px; cursor: pointer; border-radius: 10px; }
+        button:hover { background: #ff80ab; }
+        #mensajeBedrock { font-size: 1.2em; color: #ff5722; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <!-- Pantalla 1: Juego de romper bloque -->
+    <div id="pantalla1" class="pantalla activa">
+        <h1>🎉 ¡Feliz Cumpleaños, Izabelly! 🎉</h1>
+        <p>✨ Mantén presionado para romper el bloque ✨</p>
+<img id="bloque" src="pizza/cesped.png" alt="Bloque de césped">
+
+        <div id="barraProgreso"><div id="progreso"></div></div>
+        <p id="mensajeFinal">Este es el mensaje aleatorio. ¡Diviértete!</p>
+        <button id="btnSiguiente" onclick="cambiarBloque()" style="display: none;">🎁 Siguiente</button>
+        <p id="mensajeBedrock"></p> <!-- Mensaje debajo de la bedrock -->
+    </div>
+
+    <!-- Pantalla 2: Mensaje final -->
+    <div id="pantalla2" class="pantalla">
+        <h1>🎂 ¡Felicidades, Izabelly! 🎂</h1>
+        <p>💖 Que tengas el mejor cumpleaños, te queremos mucho 💖</p>
+    </div>
+
+    <script>
+        let progreso = 0;
+        let intervalo;
+        let bloque = document.getElementById("bloque");
+        let tiempoRompimiento = 300; // Tiempo inicial para romper bloque (en milisegundos)
+        let bloques = [
+            "pizza/cesped.png", 
+            "pizza/piedra.png", 
+            "pizza/obsidiana.png", 
+            "pizza/bedrock.png"
+        ];
+        let indiceBloque = 0;
+        let bloqueRoto = false;
+        let mensajeNumero = 1; // Variable para mostrar el número de mensaje
+
+        // Mensajes fijos
+        const mensajes = [
+            "Este es el tiempo que me enojaría contigo.",
+            "Este es el tiempo que me tardaria para olvidar todo lo malo de ti.",
+            "Este es el tiempo que te podre soportar 😅.",
+            "Este es el tiempo que me soportarias?."
+        ];
+
+        // Seleccionar un mensaje por el número de bloque roto
+        function obtenerMensaje() {
+            return mensajes[indiceBloque] || "¡Felicidades! Has roto todos los bloques.";
+        }
+
+        bloque.addEventListener("mousedown", iniciarRomper);
+        bloque.addEventListener("touchstart", iniciarRomper);
+        document.addEventListener("mouseup", resetear);
+        document.addEventListener("touchend", resetear);
+
+        function iniciarRomper() {
+            if (bloques[indiceBloque] === "pizza/bedrock.png") {
+                // Al presionar Bedrock, muestra el mensaje debajo
+                document.getElementById("mensajeBedrock").textContent = "Nunca se romperá,por que este es el tiempo que duraránuestra amistad";
+                return; // No hacer nada si es Bedrock
+            }
+
+            if (bloqueRoto) return; // Evitar que se rompa el mismo bloque varias veces
+
+            intervalo = setInterval(() => {
+                progreso += 10;
+                document.getElementById("progreso").style.width = progreso + "%";
+
+                if (progreso >= 100) {
+                    clearInterval(intervalo);
+                    bloque.src = bloques[indiceBloque]; // Cambiar a bloque roto
+                    mostrarMensajeFinal();
+
+                    // Aumentar el tiempo de rompimiento para el siguiente bloque
+                    tiempoRompimiento += 100; // Hace que se tarde más en romper
+                    bloqueRoto = true;
+                    
+                    // Mostrar el mensaje de acuerdo al número (alertas)
+                    alert(`Mensaje ${mensajeNumero}`);
+                    mensajeNumero++;
+
+                } else {
+                    let frame = Math.floor(progreso / 20) + 1;
+                    if (frame <= 4) {
+                        bloque.src = bloques[indiceBloque].replace("cesped", `cesped${frame}`); 
+                    }
+                }
+            }, tiempoRompimiento);
+        }
+
+        function resetear() {
+            if (bloques[indiceBloque] === "pizza/bedrock.png") {
+                return; // No resetear si es bedrock
+            }
+
+            clearInterval(intervalo);
+            progreso = 0;
+            document.getElementById("progreso").style.width = "0%";
+            bloque.src = bloques[indiceBloque];
+        }
+
+        function mostrarMensajeFinal() {
+            let mensaje = obtenerMensaje(); // Obtener mensaje fijo
+            document.getElementById("mensajeFinal").textContent = mensaje;
+            document.getElementById("mensajeFinal").style.display = "block";
+            document.getElementById("btnSiguiente").style.display = "inline";
+        }
+
+        // Función para cambiar al siguiente bloque
+        function cambiarBloque() {
+            if (indiceBloque < bloques.length - 1) {
+                // Incrementar el índice para pasar al siguiente bloque
+                indiceBloque++;
+                bloque.src = bloques[indiceBloque];
+                document.getElementById("mensajeFinal").style.display = "none"; // Ocultar mensaje anterior
+                document.getElementById("btnSiguiente").style.display = "none"; // Ocultar botón
+                progreso = 0;
+                document.getElementById("progreso").style.width = "0%";
+                tiempoRompimiento = 300; // Resetear el tiempo de rompimiento
+                bloqueRoto = false; // Permitir romper el siguiente bloque
+                document.getElementById("mensajeBedrock").textContent = ""; // Limpiar mensaje de bedrock
+            } else {
+                // Si llegamos al final (Bedrock), desactivar el botón
+                document.getElementById("btnSiguiente").style.display = "none";
+                bloque.src = "pizza/bedrock.png"; // Mostrar la bedrock (no se puede romper)
+                document.getElementById("mensajeFinal").textContent = "No puedes romper la Bedrock.";
+            }
+        }
+    </script>
+
+</body>
+</html>
